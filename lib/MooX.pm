@@ -9,9 +9,14 @@ use Carp;
 use Data::OptList;
 
 sub import {
-	my ( $self, @modules ) = @_;
+	my ( $class, @modules ) = @_;
 	my $target = caller;
 	unshift @modules, '+Moo';
+	MooX::import_base($class,$target,@modules);
+}
+
+sub import_base {
+	my ( $class, $target, @modules ) = @_;
 	my @optlist = @{Data::OptList::mkopt([@modules],{
 		must_be => [qw( ARRAY HASH )],
 	})};
