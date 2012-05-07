@@ -6,26 +6,25 @@ use warnings;
 use Import::Into;
 use Module::Runtime qw( use_module );
 use Carp;
+use Data::OptList;
 
 sub import {
 	my ( $self, @modules ) = @_;
 	my $target = caller;
-	unshift @modules, 'Moo';
-	while (@modules) {
-		my $package = shift @modules;
-		if (substr($package,0,1) eq '+') {
-			$package = substr($package,1);
-		} elsif ($package eq 'Moo') {
-			# do nothing
-		} else {
-			$package = 'MooX::'.$package;
-		}
+	unshift @modules, '+Moo';
+	my @optlist = @{Data::OptList::mkopt([@modules],{
+		must_be => [qw( ARRAY HASH )],
+	})};
+	for (@optlist) {
+		my $package = $_->[0];
+		my $opts = $_->[1];
+		for ($package) { s/^\+// or $_ = "MooX::$_" };
 		croak "No package name given" if ref $package;
-		my @args = ref $modules[0] eq 'ARRAY'
-						? @{shift @modules}
-						: ref $modules[0] eq 'HASH'
-							? %{shift @modules}
-							: ();
+		my @args = ref $opts eq 'ARRAY'
+			? @{$opts}
+			: ref $opts eq 'HASH'
+				? %{$opts}
+				: ();
 		use_module($package)->import::into($target,@args);
 	}
 }
@@ -36,7 +35,7 @@ sub import {
 
 =head1 SYNOPSIS
 
-  package MyMoo;
+  package MyClass;
 
   use MooX qw(
     Options
@@ -45,7 +44,7 @@ sub import {
   # use Moo;
   # use MooX::Options;
 
-  package MyMooComplex;
+  package MyClassComplex;
 
   use MooX
     SomeThing => [qw( import params )],
@@ -58,9 +57,25 @@ sub import {
   # use MooX::MoreThing key => 'value';
   # use NonMooXStuff;
 
+  package MyMoo;
+
+  use MooX ();
+
+  sub import { MooX->import::into(scalar caller, qw( A B +Carp )) }
+
+  # then you can do: use MyMoo; which does the same as:
+  # use Moo;
+  # use MooX::A;
+  # use MooX::B;
+  # use Carp;
+
 =head1 DESCRIPTION
 
-Using Moo and MooX:: packages the most lazy way
+Using L<Moo> and MooX:: packages the most lazy way
+
+=head1 SEE ALSO
+
+=head2 L<Import::Into>
 
 =head1 SUPPORT
 
