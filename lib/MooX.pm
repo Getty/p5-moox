@@ -13,7 +13,13 @@ sub import {
 	unshift @modules, 'Moo';
 	while (@modules) {
 		my $package = shift @modules;
-		$package = 'MooX::'.$package unless $package eq 'Moo';
+		if (substr($package,0,1) eq '+') {
+			$package = substr($package,1);
+		} elsif ($package eq 'Moo') {
+			# do nothing
+		} else {
+			$package = 'MooX::'.$package;
+		}
 		croak "No package name given" if ref $package;
 		my @args = ref $modules[0] eq 'ARRAY'
 						? @{shift @modules}
@@ -43,12 +49,14 @@ sub import {
 
   use MooX
     SomeThing => [qw( import params )],
-    OtherThing, MoreThing => { key => 'value' };
+    'OtherThing', MoreThing => { key => 'value' },
+    '+NonMooXStuff';
 
   # use Moo;
   # use MooX::SomeThing qw( import params );
-  # use OtherThing;
-  # use MoreThing key => 'value';
+  # use MooX::OtherThing;
+  # use MooX::MoreThing key => 'value';
+  # use NonMooXStuff;
 
 =head1 DESCRIPTION
 

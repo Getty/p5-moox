@@ -14,7 +14,7 @@ eval "use MooXTestTest;";
 
 my $mooxtesttest = MooXTestTest->new;
 
-is($COUNT,6,'Correct import function called with proper parameters');
+is($COUNT,60,'Correct import function called with proper parameters');
 isa_ok($mooxtesttest,'Moo::Object');
 
 done_testing;
