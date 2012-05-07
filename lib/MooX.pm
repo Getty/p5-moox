@@ -24,7 +24,6 @@ sub import_base {
 		my $package = $_->[0];
 		my $opts = $_->[1];
 		for ($package) { s/^\+// or $_ = "MooX::$_" };
-		croak "No package name given" if ref $package;
 		my @args = ref $opts eq 'ARRAY'
 			? @{$opts}
 			: ref $opts eq 'HASH'
