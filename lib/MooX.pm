@@ -75,7 +75,9 @@ sub import_base {
 
 =head1 DESCRIPTION
 
-Using L<Moo> and MooX:: packages the most lazy way
+Using L<Moo> and MooX:: packages the most lazy way.
+Strict and warnings gets enabled by virtue of Moo as it gets imported as well when importing MooX.
+However if C<import_base()> is called explicitly, you don't get that benefit.
 
 =head1 SEE ALSO
 
